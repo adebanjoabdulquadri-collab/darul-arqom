@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="icon"
+      type="image/jpeg"
+      href="./images/android-chrome-512x512.png "
+    />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome CDN -->
+    <script
+      src="https://kit.fontawesome.com/33613caafb.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Navbar - deep green with [#E1A100] accent, no gradients -->
+    <nav
+      class="sticky top-0 z-50 shadow-lg transition-all duration-300 bg-[#064e3b] border-b border-[#E1A100] animate-slideInDown"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-row justify-between items-center"
+      >
+        <!-- Logo / Branding -->
+        <div class="flex items-center gap-2 sm:gap-3 hover-lift">
+          <img
+            src="./images/favicon.ico"
+            alt="Markazul Islam Logo"
+            class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-[#E1A100] object-cover shadow-sm hover:rotate-12 transition-transform duration-300"
+          />
+          <span
+            class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide"
+          >
+            Darul-Arkom
+          </span>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="hidden md:flex items-center gap-6 lg:gap-8">
+          <a
+            href="./index.html"
+            class="text-[#E1A100] hover:text-white text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
+            >Home<span
+              class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"
+            ></span
+          ></a>
+          <a
+            href="./teachers.html"
+            class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
+            >Teachers<span
+              class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"
+            ></span
+          ></a>
+          <a
+            href="./register.html"
+            class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
+            >Register<span
+              class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"
+            ></span
+          ></a>
+          <a
+            href=""
+            class="text-white/80 hover:text-[#E1A100] text-base font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
+            >Contact<span
+              class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"
+            ></span
+          ></a>
+        </div>
+
+        <!-- Mobile Toggle Button -->
+        <button
+          id="menuBtn"
+          aria-label="Toggle Navigation Menu"
+          aria-expanded="false"
+          class="md:hidden text-[#E1A100] hover:text-white p-2 focus:outline-none hover:scale-110 transition-transform"
+        >
+          <i id="menuIcon" class="fa-solid fa-bars text-2xl"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Navigation -->
+      <div
+        id="mobileMenu"
+        class="hidden md:hidden flex-col gap-2 text-center bg-[#064e3b] border-t border-[#E1A100]"
+      >
+        <a
+          href="./index.html"
+          class="text-[#E1A100] hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+          >Home</a
+        >
+        <a
+          href="./teachers.html"
+          class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+          >Teachers</a
+        >
+        <a
+          href="./register.html"
+          class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+          >Register</a
+        >
+        <a
+          href=""
+          class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4 mb-4"
+          >Contact</a
+        >
+      </div>
+    </nav>
+    <!-- Meet Our Teachers Section -->
+    <section
+      class="bg-white pt-8 sm:pt-12 pb-10 sm:pb-16 px-4 sm:px-6 section-divider"
+    >
+      <div class="mt-2 sm:mt-4 animate-fadeInUp">
+        <h1
+          class="text-gray-600 font-extrabold text-2xl sm:text-3xl md:text-4xl text-center"
+        >
+          Meet Our Teachers
+        </h1>
+        <p
+          class="text-center text-black/70 text-base sm:text-lg md:text-xl mt-2 sm:mt-3 animate-fadeInUp delay-200"
+        >
+          Learn from qualified and experienced instructors who are passionate
+          about <br />
+          teaching the Holy Qur'an
+        </p>
+      </div>
+      <div
+        class="mt-6 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto"
+      >
+        <!-- Teacher 1 -->
+        <div
+          class="w-full items-center bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-black/10 transition-all duration-300 flex flex-col justify-between hover-lift hover-rotate animate-fadeInLeft delay-100 card-shadow"
+        >
+          <div class="w-full">
+            <div
+              class="text-center relative top-10 sm:top-12 h-32 sm:h-40 md:h-48 w-full flex justify-center"
+            >
+              <div
+                class="bg-primary border-4 border-white rounded-full text-center items-center h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 animate-float shadow-xl flex justify-center items-center"
+              >
+                <h1
+                  class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white"
+                >
+                  A
+                </h1>
+              </div>
+            </div>
+            <div class="p-4 sm:p-6 pt-10 sm:pt-14 md:pt-16">
+              <h1
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Al-Ustadh Abdfatahi
+              </h1>
+              <h3
+                class="text-primary text-base sm:text-lg md:text-xl text-center"
+              >
+                Mudeer
+              </h3>
+              <p class="text-black/70 text-center text-sm sm:text-base">
+                10+ years experience
+              </p>
+              <hr class="border-black/10 my-3 sm:my-4" />
+              <div class="text-center mb-3 sm:mb-4">
+                <h1 class="italic text-black/70 text-sm sm:text-base">
+                  Tajweed & Qira'at
+                </h1>
+              </div>
+              <h2
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Credentials:
+              </h2>
+              <ul
+                class="space-y-1.5 sm:space-y-2 text-black/70 text-sm sm:text-base md:text-xl"
+              >
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Certified Tajweed Expert
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Hifz Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Qiroah Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Senior Instructor
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="p-4 sm:p-6 pt-0 w-full">
+            <a href="./register.html"
+              ><button
+                class="w-full btn-solid-green text-white font-bold py-2.5 sm:py-3 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base"
+              >
+                Book a Trial
+              </button></a
+            >
+          </div>
+        </div>
+
+        <!-- Teacher 2 -->
+        <div
+          class="w-full items-center bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-black/10 transition-all duration-300 flex flex-col justify-between hover-lift hover-rotate animate-fadeInUp delay-200 card-shadow"
+        >
+          <div class="w-full">
+            <div
+              class="text-center relative top-10 sm:top-12 h-32 sm:h-40 md:h-48 w-full flex justify-center"
+            >
+              <div
+                class="bg-[#E1A100] border-4 border-white rounded-full text-center items-center h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 animate-float delay-200 shadow-xl flex justify-center items-center"
+              >
+                <h1
+                  class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-black"
+                >
+                  F
+                </h1>
+              </div>
+            </div>
+            <div class="p-4 sm:p-6 pt-10 sm:pt-14 md:pt-16">
+              <h1
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Ustadha Sakeenah
+              </h1>
+              <h3
+                class="text-[#E1A100] text-base sm:text-lg md:text-xl text-center"
+              >
+                Female Qur'an Instructor
+              </h3>
+              <p class="text-black/70 text-center text-sm sm:text-base">
+                3+ years experience
+              </p>
+              <hr class="border-black/10 my-3 sm:my-4" />
+              <div class="text-center mb-3 sm:mb-4">
+                <h1 class="italic text-black/70 text-sm sm:text-base">
+                  Children & Ladies Classes
+                </h1>
+              </div>
+              <h2
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Credentials:
+              </h2>
+              <ul
+                class="space-y-1.5 sm:space-y-2 text-black/70 text-sm sm:text-base md:text-xl"
+              >
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-[#E1A100] text-sm sm:text-base"
+                  ></i
+                  >Hifz Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-[#E1A100] text-sm sm:text-base"
+                  ></i
+                  >Child Education Expert
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-[#E1A100] text-sm sm:text-base"
+                  ></i
+                  >Qiroah Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-[#E1A100] text-sm sm:text-base"
+                  ></i
+                  >Female Instructor
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="p-4 sm:p-6 pt-0 w-full">
+            <a href="./register.html">
+              <button
+                class="w-full bg-[#E1A100] text-black font-bold py-2.5 sm:py-3 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base"
+              >
+                Book a Trial
+              </button></a
+            >
+          </div>
+        </div>
+
+        <!-- Teacher 3 -->
+        <div
+          class="w-full items-center bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-black/10 transition-all duration-300 flex flex-col justify-between hover-lift hover-rotate animate-fadeInRight delay-300 card-shadow"
+        >
+          <div class="w-full">
+            <div
+              class="text-center relative top-10 sm:top-12 h-32 sm:h-40 md:h-48 w-full flex justify-center"
+            >
+              <div
+                class="bg-green-700 border-4 border-white rounded-full text-center items-center h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 animate-float delay-400 shadow-xl flex justify-center items-center"
+              >
+                <h1
+                  class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white"
+                >
+                  O
+                </h1>
+              </div>
+            </div>
+            <div class="p-4 sm:p-6 pt-10 sm:pt-14 md:pt-16">
+              <h1
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Al-Ustaz Ridwanullahi
+              </h1>
+              <h3
+                class="text-green-700 text-base sm:text-lg md:text-xl text-center"
+              >
+                Islamic Course Tutor & Hifz Instructor
+              </h3>
+              <p class="text-black/70 text-center text-sm sm:text-base">
+                5+ years experience
+              </p>
+              <hr class="border-black/10 my-3 sm:my-4" />
+              <div class="text-center mb-3 sm:mb-4">
+                <h1 class="italic text-black/70 text-sm sm:text-base">
+                  Memorization & Revision
+                </h1>
+              </div>
+              <h2
+                class="text-lg sm:text-xl md:text-2xl font-bold text-black mb-2 sm:mb-3 text-center"
+              >
+                Credentials:
+              </h2>
+              <ul
+                class="space-y-1.5 sm:space-y-2 text-black/70 text-sm sm:text-base md:text-xl"
+              >
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Hifz Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Qiroah Specialist
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Program Coordinator
+                </li>
+                <li
+                  class="flex items-center gap-2 hover:translate-x-2 transition-transform"
+                >
+                  <i
+                    class="fa-solid fa-circle-check text-primary text-sm sm:text-base"
+                  ></i
+                  >Instructor
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="p-4 sm:p-6 pt-0 w-full">
+            <a href="./register.html">
+              <button
+                class="w-full btn-solid-green text-white font-bold py-2.5 sm:py-3 rounded-full transition-colors duration-200 hover:scale-105 hover:shadow-lg text-sm sm:text-base"
+              >
+                Book a Trial
+              </button></a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
