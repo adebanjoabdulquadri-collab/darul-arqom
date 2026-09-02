@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daarul Arkom — Sacred Knowledge in the Modern Age</title>
+    <meta
+      name="description"
+      content="A modern digital madrasa bridging timeless tradition with contemporary excellence. Sacred knowledge in Quranic Arabic, Tajweed, Fiqh, and Classical texts."
+    />
+    <meta
+      property="og:title"
+      content="Daarul Arkom — Sacred Knowledge in the Modern Age"
+    />
+    <meta
+      property="og:description"
+      content="A modern digital madrasa bridging timeless tradition with contemporary excellence. Sacred knowledge in Quranic Arabic, Tajweed, Fiqh, and Classical texts."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./quran.css" />
+  </head>
+  <body
+    class="bg-[#fbf9f5] text-[#1b1c1a] antialiased selection:bg-[#003527] selection:text-[#fed65b] min-h-screen flex flex-col justify-between"
+  >
+    <!-- Semantic Navigation Header -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Dynamic Application Container -->
+    <main id="main-content" class="flex-grow"></main>
+
+    <!-- Semantic Footer -->
+    <div id="footer-container"></div>
+
+    <!-- Interactive Pure HTML/JS Modals Containers -->
+    <div id="auth-modal" class="hidden"></div>
+    <div id="lesson-modal" class="hidden"></div>
+    <div id="recorder-modal" class="hidden"></div>
+    <div id="search-modal" class="hidden"></div>
+    <div id="bookmark-modal" class="hidden"></div>
+    <div id="grading-modal" class="hidden"></div>
+
+    <!-- Global Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <!-- Global Persistent Audio Recitation Player Bar -->
+    <div id="global-audio-bar"></div>
+
+    <!-- Pure Vanilla JavaScript Entrypoint -->
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
