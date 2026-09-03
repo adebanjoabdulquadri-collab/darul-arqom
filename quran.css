@@ -1,0 +1,137 @@
+@layer base {
+  body {
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-serif-display {
+    font-family: "Source Serif 4", Georgia, Cambria, serif;
+  }
+  .font-arabic {
+    font-family: "Amiri", "Traditional Arabic", serif;
+  }
+}
+
+.islamic-pattern {
+  background-color: #003527;
+  background-image: radial-gradient(
+    rgba(254, 214, 91, 0.14) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
+}
+
+.islamic-pattern-light {
+  background-color: #fbf9f5;
+  background-image: radial-gradient(rgba(0, 53, 39, 0.06) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.subtle-emerald-glow {
+  box-shadow: 0 12px 40px -10px rgba(0, 53, 39, 0.12);
+}
+
+.gold-accent-glow {
+  box-shadow: 0 8px 30px -6px rgba(115, 92, 0, 0.18);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1ede4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #003527;
+  border-radius: 4px;
+}
+
+input[type="range"].audio-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(0, 53, 39, 0.15);
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"].audio-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #003527;
+  border: 2px solid #fed65b;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+input[type="range"].audio-range::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+.ayah-active {
+  background-color: rgba(254, 214, 91, 0.18) !important;
+  border-color: rgba(0, 53, 39, 0.4) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 53, 39, 0.1);
+}
+
+.equalizer-bar {
+  display: inline-block;
+  width: 3px;
+  background-color: #fed65b;
+  border-radius: 2px;
+  animation: equalize 1s infinite alternate ease-in-out;
+}
+
+.equalizer-bar:nth-child(1) {
+  height: 14px;
+  animation-delay: 0.1s;
+}
+.equalizer-bar:nth-child(2) {
+  height: 20px;
+  animation-delay: 0.3s;
+}
+.equalizer-bar:nth-child(3) {
+  height: 10px;
+  animation-delay: 0.2s;
+}
+.equalizer-bar:nth-child(4) {
+  height: 16px;
+  animation-delay: 0.4s;
+}
+
+@keyframes equalize {
+  0% {
+    transform: scaleY(0.3);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
