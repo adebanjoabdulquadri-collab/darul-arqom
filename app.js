@@ -1,4 +1,13 @@
-import { COURSES, RECITERS, SURAHS } from "./data.js";
+import {
+  COURSES,
+  INSTRUCTORS,
+  LIVE_SESSIONS,
+  ASSIGNMENTS,
+  CURRENT_STUDENT,
+  IMAGES,
+  RECITERS,
+  SURAHS,
+} from "./data.js";
 import { Icons } from "./icons.js";
 
 class DaarulArkomApp {
@@ -12,7 +21,7 @@ class DaarulArkomApp {
     this.currentTime = 0;
     this.duration = 0;
     this.activeAyahIndex = 0;
-    this.loopMode = "off";
+    this.loopMode = "off"; // "off" | "surah"
     this.playbackRate = 1.0;
     this.fontSize = "normal";
     this.showTranslation = true;
@@ -22,14 +31,17 @@ class DaarulArkomApp {
     this.isMuted = false;
     this.isMobileMenuOpen = false;
 
+    // Verse text cache (per surah) and audio-link cache (per surah+reciter)
     this.surahTextCache = {};
     this.reciterAudioCache = {};
     this.isLoadingVerses = false;
     this.isSwitchingReciter = false;
     this.missingAudioCount = 0;
 
+    // Bookmarks
     this.bookmarks = new Set();
 
+    // Memorization / repetition drill state
     this.repeat = {
       active: false,
       startIdx: 0,
@@ -40,9 +52,12 @@ class DaarulArkomApp {
       pauseMs: 500,
     };
 
+    // Recall-test ("hide text") mode
     this.hideTextMode = false;
     this.revealedAyahs = new Set();
 
+    // --- Gapless playback: two audio elements, one plays while the
+    // other silently buffers the next ayah, so switching is instant. ---
     this.audioSlots = { A: new Audio(), B: new Audio() };
     this.activeSlotKey = "A";
     this.preloadedAyahIndex = null;
@@ -67,6 +82,8 @@ class DaarulArkomApp {
     await this.loadSurah(this.currentSurah, { autoplay: false });
   }
 
+  // --- Core audio engine (gapless, per-ayah, real API-supplied URLs) -----
+
   initAudioEngine() {
     Object.values(this.audioSlots).forEach((audio) => {
       audio.preload = "auto";
@@ -78,30 +95,34 @@ class DaarulArkomApp {
         this.duration = audio.duration || 0;
         this.updateAudioProgressUI();
       });
-
       audio.addEventListener("play", () => {
         if (audio !== this.audioElement) return;
         this.isPlaying = true;
         this.updatePlayStateUI();
       });
-
       audio.addEventListener("pause", () => {
         if (audio !== this.audioElement) return;
         this.isPlaying = false;
         this.updatePlayStateUI();
       });
-
       audio.addEventListener("loadedmetadata", () => {
         if (audio !== this.audioElement) return;
         this.duration = audio.duration || 0;
         this.updateAudioProgressUI();
       });
-
+      audio.addEventListener("waiting", () => {
+        if (audio !== this.audioElement) return;
+        const status = document.getElementById("player-status-label");
+        if (status) status.textContent = "Buffering…";
+      });
+      audio.addEventListener("canplay", () => {
+        if (audio !== this.audioElement) return;
+        this.updatePlayStateUI();
+      });
       audio.addEventListener("ended", () => {
         if (audio !== this.audioElement) return;
         this.handleAyahEnded();
       });
-
       audio.addEventListener("error", () => {
         if (!audio.src) return;
         if (audio === this.audioElement) {
@@ -114,7 +135,7 @@ class DaarulArkomApp {
           this.isPlaying = false;
           this.updatePlayStateUI();
           this.stopRepeatMode();
-        } else {
+        } else if (audio === this.inactiveAudio) {
           this.preloadedAyahIndex = null;
         }
       });
@@ -241,6 +262,8 @@ class DaarulArkomApp {
     }
   }
 
+  // --- Fetching verse text + reciter audio links (combined, cached) -----
+
   async fetchSurahData(surah, reciter) {
     const audioCacheKey = `${surah.number}_${reciter.id}`;
     const needText = !this.surahTextCache[surah.number];
@@ -307,7 +330,8 @@ class DaarulArkomApp {
 
   mergeSurahData(surahNumber, reciterId) {
     const text = this.surahTextCache[surahNumber] || [];
-    const audioMap = this.reciterAudioCache[`${surahNumber}_${reciterId}`] || {};
+    const audioMap =
+      this.reciterAudioCache[`${surahNumber}_${reciterId}`] || {};
     return text.map((a) => ({
       ...a,
       audioUrl: audioMap[a.numberInSurah] || null,
@@ -324,10 +348,15 @@ class DaarulArkomApp {
       const merged = await this.fetchSurahData(surah, this.selectedReciter);
       surah.ayahs = merged;
     } catch (err) {
-      this.showToast("Couldn't load this surah — please check your connection");
+      this.showToast(
+        "Couldn't load this surah — please check your connection and try again",
+      );
     } finally {
       this.isLoadingVerses = false;
-      if (this.currentView === "recitation" && this.currentSurah.id === surah.id) {
+      if (
+        this.currentView === "recitation" &&
+        this.currentSurah.id === surah.id
+      ) {
         this.renderMainContent();
       }
       if (this.currentSurah.id === surah.id && surah.ayahs?.length) {
@@ -335,6 +364,8 @@ class DaarulArkomApp {
       }
     }
   }
+
+  // --- Surah / Reciter switching ------------------------------------------
 
   async setSurah(surahId) {
     const found = this.surahs.find(
@@ -375,9 +406,11 @@ class DaarulArkomApp {
     try {
       const merged = await this.fetchSurahData(this.currentSurah, found);
       this.currentSurah.ayahs = merged;
-      this.showToast(`Reciter switched to ${found.name}`);
+      this.showToast(`Reciter switched to ${found.name} (${found.arabicName})`);
     } catch (err) {
-      this.showToast(`Couldn't load ${found.name}'s recitation — please try again`);
+      this.showToast(
+        `Couldn't load ${found.name}'s recitation right now — please try again`,
+      );
     } finally {
       this.isSwitchingReciter = false;
       const idxToReload = this.repeat.active
@@ -397,6 +430,8 @@ class DaarulArkomApp {
       this.setSurah(this.surahs[nextIdx].id);
     }
   }
+
+  // --- Memorization / repetition drill -------------------------------------
 
   startRepeatMode(startIdx, endIdx, totalReps, pauseMs = 500) {
     if (startIdx > endIdx) [startIdx, endIdx] = [endIdx, startIdx];
@@ -457,6 +492,8 @@ class DaarulArkomApp {
     this.startRepeatMode(idx, idx, count, this.repeat.pauseMs || 500);
   }
 
+  // --- Player controls -----------------------------------------------------
+
   toggleLoop() {
     this.loopMode = this.loopMode === "surah" ? "off" : "surah";
     this.renderMainContent();
@@ -476,7 +513,8 @@ class DaarulArkomApp {
     this.audioSlots.A.volume = vol;
     this.audioSlots.B.volume = vol;
     const muteBtn = document.getElementById("player-mute-btn");
-    if (muteBtn) muteBtn.innerHTML = this.isMuted ? Icons.volumeMute : Icons.volumeHigh;
+    if (muteBtn)
+      muteBtn.innerHTML = this.isMuted ? Icons.volumeMute : Icons.volumeHigh;
   }
 
   setVolume(vol) {
@@ -485,7 +523,8 @@ class DaarulArkomApp {
     this.audioSlots.A.volume = vol;
     this.audioSlots.B.volume = vol;
     const muteBtn = document.getElementById("player-mute-btn");
-    if (muteBtn) muteBtn.innerHTML = this.isMuted ? Icons.volumeMute : Icons.volumeHigh;
+    if (muteBtn)
+      muteBtn.innerHTML = this.isMuted ? Icons.volumeMute : Icons.volumeHigh;
   }
 
   setPlaybackRate(rate) {
@@ -525,6 +564,8 @@ class DaarulArkomApp {
     this.renderMainContent();
   }
 
+  // --- UI update helpers -----------------------------------------------------
+
   updatePlayStateUI() {
     const btn = document.getElementById("player-master-play-btn");
     if (btn) btn.innerHTML = this.isPlaying ? Icons.pause : Icons.play;
@@ -553,14 +594,18 @@ class DaarulArkomApp {
   updateActiveAyahUI() {
     const idx = this.activeAyahIndex;
     const badge = document.getElementById("player-ayah-of-badge");
-    if (badge) badge.textContent = `Ayah ${idx + 1} of ${this.currentSurah.ayahCount}`;
+    if (badge)
+      badge.textContent = `Ayah ${idx + 1} of ${this.currentSurah.ayahCount}`;
 
     document.querySelectorAll("[data-ayah-row]").forEach((el) => {
       const i = parseInt(el.dataset.ayahRow, 10);
       el.classList.toggle("ayah-active", i === idx);
       const listeningBadge = el.querySelector("[data-listening-badge]");
       if (listeningBadge) {
-        listeningBadge.classList.toggle("hidden", !(i === idx && this.isPlaying));
+        listeningBadge.classList.toggle(
+          "hidden",
+          !(i === idx && this.isPlaying),
+        );
       }
     });
 
@@ -583,7 +628,10 @@ class DaarulArkomApp {
     window.scrollTo({ top: 0, behavior: "smooth" });
     this.renderNavigation();
     this.renderMainContent();
-    if (view === "recitation" && !this.surahTextCache[this.currentSurah.number]) {
+    if (
+      view === "recitation" &&
+      !this.surahTextCache[this.currentSurah.number]
+    ) {
       this.loadSurah(this.currentSurah, { autoplay: false });
     }
   }
@@ -603,31 +651,23 @@ class DaarulArkomApp {
               onerror="this.style.display='none'"
             />
             <span class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide">
-              Daarul Arkom
+              Darul-Arkom
             </span>
           </div>
 
           <div class="hidden md:flex items-center gap-6 lg:gap-8">
-            <a href="#" data-nav="home" class="text-[#E1A100] hover:text-white text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group">
-              Home
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a href="#" data-nav="recitation" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group">
-              Recitation
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a href="#" data-nav="courses" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group">
-              Courses
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a href="#" data-nav="profile" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group">
-              Profile
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a href="#" data-nav="admin" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group">
-              Admin
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span>
-            </a>
+            <a href="./index.html" class="text-[#E1A100] hover:text-white text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+              >Home<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
+            ></a>
+            <a href="" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+              >Services<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
+            ></a>
+            <a href="./register.html" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+              >Register<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
+            ></a>
+            <a href="" class="text-white/80 hover:text-[#E1A100] text-base font-medium transition-all duration-200 hover:scale-110 relative group"
+              >Contact<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
+            ></a>
           </div>
 
           <button
@@ -644,11 +684,10 @@ class DaarulArkomApp {
           id="mobileMenu"
           class="${this.isMobileMenuOpen ? "flex" : "hidden"} md:hidden flex-col gap-2 text-center bg-[#064e3b] border-t border-[#E1A100]"
         >
-          <a href="#" data-nav="home" class="text-[#E1A100] hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Home</a>
-          <a href="#" data-nav="recitation" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Recitation</a>
-          <a href="#" data-nav="courses" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Courses</a>
-          <a href="#" data-nav="profile" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Profile</a>
-          <a href="#" data-nav="admin" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4 mb-4">Admin</a>
+          <a href="./index.html" class="text-[#E1A100] hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Home</a>
+          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Services</a>
+          <a href="./register.html" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Register</a>
+          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4 mb-4">Contact</a>
         </div>
       </nav>
     `;
@@ -672,8 +711,6 @@ class DaarulArkomApp {
     if (this.currentView === "home") this.renderHome(main);
     else if (this.currentView === "recitation") this.renderRecitation(main);
     else if (this.currentView === "courses") this.renderCourses(main);
-    else if (this.currentView === "profile") this.renderProfile(main);
-    else if (this.currentView === "admin") this.renderAdmin(main);
   }
 
   renderHome(main) {
@@ -708,6 +745,7 @@ class DaarulArkomApp {
     main.innerHTML = `
       <div class="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
+        <!-- Header -->
         <div class="bg-white rounded-2xl p-6 border border-[#064e3b]/10 shadow-sm">
           <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div>
@@ -746,6 +784,7 @@ class DaarulArkomApp {
           </div>
         </div>
 
+        <!-- Player -->
         <div class="bg-[#064e3b] rounded-2xl p-6 text-white shadow-lg">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -797,6 +836,7 @@ class DaarulArkomApp {
           </div>
         </div>
 
+        <!-- Settings row -->
         <div class="bg-white rounded-2xl p-4 border border-[#064e3b]/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div class="flex items-center gap-2">
             <span class="text-sm font-bold text-[#064e3b]">Script Size:</span>
@@ -824,7 +864,10 @@ class DaarulArkomApp {
           </div>
         </div>
 
-        ${ayahs.length ? `
+        <!-- Memorization Tools -->
+        ${
+          ayahs.length
+            ? `
         <div class="bg-white rounded-2xl p-5 border border-[#064e3b]/10">
           <h3 class="font-bold text-[#064e3b] mb-3">📿 Memorization Tools</h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -863,10 +906,11 @@ class DaarulArkomApp {
           </div>
           <div class="flex items-center justify-between mt-4 flex-wrap gap-3">
             <div class="flex items-center gap-3">
-              ${r.active
-                ? `<button id="repeat-stop-btn" class="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700">■ Stop Repeating</button>
-                   <span class="text-sm font-semibold text-[#064e3b]">Repeating Ayah ${ayahs[r.cursorIdx]?.numberInSurah} — Rep ${r.repsDone + 1} of ${r.totalReps}</span>`
-                : `<button id="repeat-start-btn" class="px-4 py-2 rounded-xl bg-[#064e3b] text-[#E1A100] text-sm font-bold hover:bg-[#0a6b4a]">▶ Start Repetition Drill</button>`
+              ${
+                r.active
+                  ? `<button id="repeat-stop-btn" class="px-4 py-2 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700">■ Stop Repeating</button>
+                     <span class="text-sm font-semibold text-[#064e3b]">Repeating Ayah ${ayahs[r.cursorIdx]?.numberInSurah} — Rep ${r.repsDone + 1} of ${r.totalReps}</span>`
+                  : `<button id="repeat-start-btn" class="px-4 py-2 rounded-xl bg-[#064e3b] text-[#E1A100] text-sm font-bold hover:bg-[#0a6b4a]">▶ Start Repetition Drill</button>`
               }
             </div>
             <label class="flex items-center gap-2 text-sm text-[#064e3b] cursor-pointer">
@@ -875,18 +919,23 @@ class DaarulArkomApp {
             </label>
           </div>
         </div>
-        ` : ""}
+        `
+            : ""
+        }
 
+        <!-- Ayah list -->
         <div id="ayah-list" class="space-y-4">
-          ${this.isLoadingVerses && !ayahs.length
-            ? `<div class="text-center py-10 text-gray-500">Loading full verses…</div>`
-            : ayahs
-                .map((ayah, idx) => {
-                  const isActive = idx === activeIdx;
-                  const bookmarkKey = `${s.id}:${ayah.numberInSurah}`;
-                  const isBookmarked = this.bookmarks.has(bookmarkKey);
-                  const isHidden = this.hideTextMode && !this.revealedAyahs.has(idx);
-                  return `
+          ${
+            this.isLoadingVerses && !ayahs.length
+              ? `<div class="text-center py-10 text-gray-500">Loading full verses…</div>`
+              : ayahs
+                  .map((ayah, idx) => {
+                    const isActive = idx === activeIdx;
+                    const bookmarkKey = `${s.id}:${ayah.numberInSurah}`;
+                    const isBookmarked = this.bookmarks.has(bookmarkKey);
+                    const isHidden =
+                      this.hideTextMode && !this.revealedAyahs.has(idx);
+                    return `
                     <div data-ayah-row="${idx}" class="rounded-xl p-4 border bg-[#fef9e7]/40 border-[#064e3b]/10 transition-colors ${isActive ? "ayah-active" : ""}">
                       <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
                         <div class="flex items-center gap-2">
@@ -900,9 +949,10 @@ class DaarulArkomApp {
                         </div>
                         <span data-listening-badge class="px-2 py-0.5 rounded-full bg-[#064e3b] text-[#E1A100] text-[10px] font-bold uppercase tracking-wide ${isActive && this.isPlaying ? "" : "hidden"}">Listening Now</span>
                       </div>
-                      ${isHidden
-                        ? `<button data-reveal-ayah="${idx}" class="w-full text-center py-6 rounded-lg bg-[#064e3b]/5 text-[#064e3b] text-sm font-semibold hover:bg-[#064e3b]/10 transition-colors">👁 Tap to reveal ayah ${ayah.numberInSurah}</button>`
-                        : `
+                      ${
+                        isHidden
+                          ? `<button data-reveal-ayah="${idx}" class="w-full text-center py-6 rounded-lg bg-[#064e3b]/5 text-[#064e3b] text-sm font-semibold hover:bg-[#064e3b]/10 transition-colors">👁 Tap to reveal ayah ${ayah.numberInSurah}</button>`
+                          : `
                         <p class="font-arabic ${arabicSizeClass} text-right leading-loose text-[#064e3b]">${ayah.arabic}</p>
                         ${this.showTransliteration ? `<p class="text-xs text-[#735c00] mt-2 italic">${ayah.transliteration}</p>` : ""}
                         ${this.showTranslation ? `<p class="text-sm text-gray-600 mt-1">${ayah.english}</p>` : ""}
@@ -911,8 +961,9 @@ class DaarulArkomApp {
                       }
                     </div>
                   `;
-                })
-                .join("")}
+                  })
+                  .join("")
+          }
         </div>
       </div>
     `;
@@ -932,78 +983,6 @@ class DaarulArkomApp {
             </div>
           `,
           ).join("")}
-        </div>
-      </div>
-    `;
-  }
-
-  renderProfile(main) {
-    main.innerHTML = `
-      <div class="max-w-4xl mx-auto px-4 py-12">
-        <div class="bg-white rounded-2xl p-8 border border-[#064e3b]/20 shadow-sm">
-          <div class="flex items-center gap-6 mb-8">
-            <div class="w-24 h-24 rounded-full bg-[#064e3b]/10 flex items-center justify-center text-4xl text-[#064e3b]">
-              👤
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-[#064e3b]">Salman Farooq</h1>
-              <p class="text-gray-600">Student • salman.f@madrasa.org</p>
-              <div class="flex gap-4 mt-2">
-                <span class="text-sm bg-[#E1A100]/20 text-[#064e3b] px-3 py-1 rounded-full">🔥 12 Day Streak</span>
-                <span class="text-sm bg-[#064e3b]/10 text-[#064e3b] px-3 py-1 rounded-full">⭐ 450 Points</span>
-              </div>
-            </div>
-          </div>
-          <div class="border-t border-[#064e3b]/10 pt-6">
-            <h2 class="font-bold text-[#064e3b] mb-4">Enrolled Courses</h2>
-            <div class="space-y-3">
-              ${COURSES.map(
-                (c) => `
-                <div class="flex items-center justify-between p-4 bg-[#fbf9f5] rounded-xl border border-[#064e3b]/10">
-                  <div>
-                    <p class="font-semibold text-[#064e3b]">${c.title}</p>
-                    <p class="text-sm text-gray-500">${c.category} • ${c.weeksCount} weeks</p>
-                  </div>
-                  <span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">In Progress</span>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  renderAdmin(main) {
-    main.innerHTML = `
-      <div class="max-w-7xl mx-auto px-4 py-12">
-        <h1 class="text-3xl font-bold text-[#064e3b] mb-8">Admin Dashboard</h1>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-white rounded-2xl p-6 border border-[#064e3b]/20 shadow-sm">
-            <h3 class="text-sm text-gray-500">Total Students</h3>
-            <p class="text-3xl font-bold text-[#064e3b]">50+</p>
-          </div>
-          <div class="bg-white rounded-2xl p-6 border border-[#064e3b]/20 shadow-sm">
-            <h3 class="text-sm text-gray-500">Courses</h3>
-            <p class="text-3xl font-bold text-[#064e3b]">${COURSES.length}</p>
-          </div>
-          <div class="bg-white rounded-2xl p-6 border border-[#064e3b]/20 shadow-sm">
-            <h3 class="text-sm text-gray-500">Teachers</h3>
-            <p class="text-3xl font-bold text-[#064e3b]">2+</p>
-          </div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 border border-[#064e3b]/20 shadow-sm">
-          <h2 class="font-bold text-[#064e3b] mb-4">Recent Activity</h2>
-          <div class="space-y-3">
-            <div class="flex items-center justify-between p-3 bg-[#fbf9f5] rounded-xl">
-              <span>Salman Farooq completed Tajweed Foundations</span>
-              <span class="text-sm text-gray-500">2 hours ago</span>
-            </div>
-            <div class="flex items-center justify-between p-3 bg-[#fbf9f5] rounded-xl">
-              <span>New enrollment: Ali Khan - Quranic Arabic</span>
-              <span class="text-sm text-gray-500">5 hours ago</span>
-            </div>
-          </div>
         </div>
       </div>
     `;
@@ -1039,117 +1018,48 @@ class DaarulArkomApp {
         return;
       }
 
-      const navLink = target.closest("[data-nav]");
-      if (navLink) {
-        e.preventDefault();
-        this.navigate(navLink.dataset.nav);
-        return;
-      }
+      const speedBtn = target.closest("[data-speed]");
+      const fontBtn = target.closest("[data-fontsize]");
+      const playAyahBtn = target.closest("[data-play-ayah]");
+      const bookmarkBtn = target.closest("[data-bookmark-ayah]");
+      const quickRepeatBtn = target.closest("[data-quick-repeat]");
+      const revealBtn = target.closest("[data-reveal-ayah]");
+      const repeatPresetBtn = target.closest("[data-repeat-preset]");
 
-      if (target.closest("#nav-brand-logo")) {
-        this.navigate("home");
-        return;
-      }
-
-      if (target.closest("#hero-reciter-btn")) {
-        this.navigate("recitation");
-        return;
-      }
-
-      if (target.closest("#player-master-play-btn")) {
+      if (target.closest("#nav-brand-logo")) this.navigate("home");
+      else if (target.closest("#hero-reciter-btn")) this.navigate("recitation");
+      else if (target.closest("#player-master-play-btn"))
         this.togglePlayPause();
-        return;
-      }
-
-      if (target.closest("#player-loop-btn")) {
-        this.toggleLoop();
-        return;
-      }
-
-      if (target.closest("#player-back10-btn")) {
-        this.seekBy(-10);
-        return;
-      }
-
-      if (target.closest("#player-fwd10-btn")) {
-        this.seekBy(10);
-        return;
-      }
-
-      if (target.closest("#player-prev-surah-btn")) {
-        this.jumpSurah(-1);
-        return;
-      }
-
-      if (target.closest("#player-next-surah-btn")) {
-        this.jumpSurah(1);
-        return;
-      }
-
-      if (target.closest("#player-mute-btn")) {
-        this.toggleMute();
-        return;
-      }
-
-      if (target.closest("#repeat-start-btn")) {
+      else if (target.closest("#player-loop-btn")) this.toggleLoop();
+      else if (target.closest("#player-back10-btn")) this.seekBy(-10);
+      else if (target.closest("#player-fwd10-btn")) this.seekBy(10);
+      else if (target.closest("#player-prev-surah-btn")) this.jumpSurah(-1);
+      else if (target.closest("#player-next-surah-btn")) this.jumpSurah(1);
+      else if (target.closest("#player-mute-btn")) this.toggleMute();
+      else if (target.closest("#repeat-start-btn")) {
         this.startRepeatMode(
           this.repeat.startIdx,
           this.repeat.endIdx,
           this.repeat.totalReps,
           this.repeat.pauseMs,
         );
-        return;
-      }
-
-      if (target.closest("#repeat-stop-btn")) {
-        this.stopRepeatMode();
-        return;
-      }
-
-      const repeatPresetBtn = target.closest("[data-repeat-preset]");
-      if (repeatPresetBtn) {
+      } else if (target.closest("#repeat-stop-btn")) this.stopRepeatMode();
+      else if (repeatPresetBtn) {
         const n = parseInt(repeatPresetBtn.dataset.repeatPreset, 10);
         this.repeat.totalReps = n;
         const input = document.getElementById("repeat-count-input");
         if (input) input.value = n;
-        return;
-      }
-
-      const speedBtn = target.closest("[data-speed]");
-      if (speedBtn) {
+      } else if (speedBtn)
         this.setPlaybackRate(parseFloat(speedBtn.dataset.speed));
-        return;
-      }
-
-      const fontBtn = target.closest("[data-fontsize]");
-      if (fontBtn) {
-        this.setFontSize(fontBtn.dataset.fontsize);
-        return;
-      }
-
-      const playAyahBtn = target.closest("[data-play-ayah]");
-      if (playAyahBtn) {
+      else if (fontBtn) this.setFontSize(fontBtn.dataset.fontsize);
+      else if (playAyahBtn)
         this.playAyah(parseInt(playAyahBtn.dataset.playAyah, 10));
-        return;
-      }
-
-      const bookmarkBtn = target.closest("[data-bookmark-ayah]");
-      if (bookmarkBtn) {
+      else if (bookmarkBtn)
         this.toggleBookmark(parseInt(bookmarkBtn.dataset.bookmarkAyah, 10));
-        return;
-      }
-
-      const quickRepeatBtn = target.closest("[data-quick-repeat]");
-      if (quickRepeatBtn) {
+      else if (quickRepeatBtn)
         this.quickRepeatAyah(parseInt(quickRepeatBtn.dataset.quickRepeat, 10));
-        return;
-      }
-
-      const revealBtn = target.closest("[data-reveal-ayah]");
-      if (revealBtn) {
+      else if (revealBtn)
         this.toggleRevealAyah(parseInt(revealBtn.dataset.revealAyah, 10));
-        return;
-      }
     });
 
     document.addEventListener("change", (e) => {
