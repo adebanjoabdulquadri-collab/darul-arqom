@@ -37,19 +37,25 @@
         class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-row justify-between items-center"
       >
         <!-- Logo / Branding -->
-        <div class="flex items-center gap-2 sm:gap-3 hover-lift">
+        <div class="flex items-center gap-2 sm:gap-3 hover-lift flex-shrink-0">
           <img
             src="./images/favicon.ico"
             alt="Markazul Islam Logo"
             class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-[#E1A100] object-cover shadow-sm hover:rotate-12 transition-transform duration-300"
           />
           <span
-            class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide"
+            class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide whitespace-nowrap"
           >
             Darul-Arkom
           </span>
         </div>
-
+        <a href="./quran.html" class="hidden md:block flex-shrink-0">
+          <div
+            class="text-center gap-3 items-center btn-outline-gold px-6 sm:px-10 py-3 animate-pulse sm:py-4 ml-28 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto"
+          >
+            AI Qur'an Mentor <i class="fa-solid fa-headphones"></i>
+          </div>
+        </a>
         <!-- Navigation Links -->
         <div class="hidden md:flex items-center gap-6 lg:gap-8">
           <a
@@ -99,8 +105,13 @@
         class="hidden md:hidden flex-col gap-2 text-center bg-[#064e3b] border-t border-[#E1A100]"
       >
         <a
+          href="quran.html"
+          class="text-white hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+          >AI Qur'an mentor</a
+        >
+        <a
           href="./index.html"
-          class="text-[#E1A100] hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+          class="text-white hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
           >Home</a
         >
         <a
@@ -151,10 +162,10 @@
           understanding from certified teachers worldwide
         </p>
         <div
-          class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0 animate-fadeInUp delay-800"
+          class="flex flex-col sm:flex-row md:gap-3 gap-6 w-full sm:w-auto px-4 sm:px-0 animate-fadeInUp delay-800"
         >
           <div
-            class="btn-solid-green px-6 sm:px-10 py-3 sm:py-4 animate-bounce rounded-full hover:scale-105 transition-transform duration-300 cursor-pointer shadow-lg hover-lift w-full sm:w-auto text-center"
+            class="btn-solid-green px-6 sm:px-10 py-3 sm:py-4 animate-pulse rounded-full hover:scale-105 transition-transform duration-300 cursor-pointer shadow-lg hover-lift w-full sm:w-auto text-center"
           >
             <a href="./register.html"
               ><p class="text-base sm:text-lg md:text-2xl text-white font-bold">
@@ -162,15 +173,15 @@
               </p></a
             >
           </div>
-          <a href="./quran.html"
-            ><div
-              class="btn-outline-gold px-6 sm:px-10 py-3 animate-pulse sm:py-4 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto text-center"
+          <a href="./quran.html" class="w-full sm:w-auto">
+            <div
+              class="btn-outline-gold px-6 sm:px-10 py-3 animate-bounce sm:py-4 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto text-center"
             >
               <p class="font-semibold text-base sm:text-lg md:text-2xl">
                 Try our AI Qur'an Mentor
               </p>
-            </div></a
-          >
+            </div>
+          </a>
         </div>
       </div>
 
@@ -654,7 +665,7 @@
           Over the years, we have helped thousands of students connect. <br />
           with the Holy Qur'an
         </p>
-        <div class="md:flex md:justify-center md:gap-64 flex gap-8">
+        <div class="flex flex-wrap justify-center gap-8 md:gap-64">
           <div class="flex flex-col items-center animate-fadeInLeft delay-300">
             <div
               class="md:w-16 md:h-16 w-10 h-10 rounded-full border-2 border-[#E1A100] flex items-center justify-center mb-3 sm:mb-6 bg-[#064e3b]/50 animate-float shadow-xl"
@@ -674,7 +685,7 @@
               class="md:w-16 md:h-16 w-10 h-10 rounded-full border-2 border-[#E1A100] flex items-center justify-center mb-3 sm:mb-6 bg-[#064e3b]/50 animate-float delay-200 shadow-xl"
             >
               <i
-                class="fa-solid fa-trophy md:text-2xl text-xl text-[#E1A100]d"
+                class="fa-solid fa-trophy md:text-2xl text-xl text-[#E1A100]"
               ></i>
             </div>
             <span
@@ -723,7 +734,7 @@
           </p>
         </div>
         <div
-          class="pt-8 sm:pt-12 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto pb-8 sm:pb-12"
+          class="pt-8 sm:pt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto pb-8 sm:pb-12"
         >
           <!-- Testimonial 1 -->
           <div
@@ -948,7 +959,7 @@
           <h1
             class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold pt-4 sm:pt-10 hover-lift"
           >
-            Begin Your Sacred <br />
+            Begin Your Sacred <br class="hidden sm:block" />
             Journey Today
           </h1>
           <p
@@ -976,7 +987,7 @@
             >
           </div>
           <div
-            class="border-[#E1A100] border-2 px-6 sm:px-10 py-3 sm:py-4 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto text-center"
+            class="border-[#E1A100] hover:bg-[#E1A100] hover:text-white border-2 px-6 sm:px-10 py-3 sm:py-4 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto text-center"
           >
             <a href="https://wa.me/2349069115484" target="_blank"
               ><p class="font-semibold text-sm sm:text-lg md:text-2xl">
@@ -1079,12 +1090,11 @@
       </div>
 
       <div
-        class="max-w-7xl mx-auto mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#E1A100]text-center text-xs sm:text-sm text-white/60 flex flex-col sm:flex-row justify-between items-center gap-2 animate-fadeInUp delay-500"
+        class="max-w-6xl mx-auto mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#E1A100]text-center text-xs sm:text-sm text-white/60 flex flex-col sm:flex-row justify-between items-center gap-2 animate-fadeInUp delay-500"
       >
         <p>&copy; 2026 Darul-Arkom. All rights reserved.</p>
       </div>
     </footer>
-
     <script>
       // Mobile menu toggle functionality
       const menuBtn = document.getElementById("menuBtn");
