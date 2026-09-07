@@ -641,35 +641,41 @@ class DaarulArkomApp {
     if (!container) return;
 
     container.innerHTML = `
-      <nav class="sticky top-0 z-50 shadow-lg transition-all duration-300 bg-[#064e3b] border-b border-[#E1A100]">
+      <nav class="sticky top-0 z-50 shadow-lg transition-all duration-300 bg-[#064e3b] border-b border-[#E1A100] animate-slideInDown">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-row justify-between items-center">
-          <div class="flex items-center gap-2 sm:gap-3 hover-lift cursor-pointer" id="nav-brand-logo">
+          <!-- Logo / Branding -->
+          <div class="flex items-center gap-2 sm:gap-3 hover-lift flex-shrink-0">
             <img
               src="./images/favicon.ico"
               alt="Markazul Islam Logo"
               class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 border-[#E1A100] object-cover shadow-sm hover:rotate-12 transition-transform duration-300"
-              onerror="this.style.display='none'"
             />
-            <span class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide">
+            <span class="text-[#E1A100] font-semibold text-sm sm:text-base md:text-lg tracking-wide whitespace-nowrap">
               Darul-Arkom
             </span>
           </div>
-
+          <a href="./quran.html" class="hidden md:block flex-shrink-0">
+            <div class="text-center gap-3 items-center btn-outline-gold px-6 sm:px-10 py-3 animate-pulse sm:py-4 ml-28 rounded-full transition-all duration-300 cursor-pointer shadow-md w-full sm:w-auto">
+              AI Qur'an Mentor <i class="fa-solid fa-headphones"></i>
+            </div>
+          </a>
+          <!-- Navigation Links -->
           <div class="hidden md:flex items-center gap-6 lg:gap-8">
-            <a href="./index.html" class="text-[#E1A100] hover:text-white text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+            <a href="./index.html" class="text-[#E1A100] hover:text-white text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
               >Home<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
             ></a>
-            <a href="" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+            <a href="" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
               >Services<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
             ></a>
-            <a href="./register.html" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 relative group"
+            <a href="./register.html" class="text-white/80 hover:text-[#E1A100] text-base lg:text-lg font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
               >Register<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
             ></a>
-            <a href="" class="text-white/80 hover:text-[#E1A100] text-base font-medium transition-all duration-200 hover:scale-110 relative group"
+            <a href="" class="text-white/80 hover:text-[#E1A100] text-base font-medium transition-all duration-200 hover:scale-110 hover-lift relative group"
               >Contact<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E1A100] group-hover:w-full transition-all duration-300"></span
             ></a>
           </div>
 
+          <!-- Mobile Toggle Button -->
           <button
             id="menuBtn"
             aria-label="Toggle Navigation Menu"
@@ -680,14 +686,26 @@ class DaarulArkomApp {
           </button>
         </div>
 
+        <!-- Mobile Dropdown Navigation -->
         <div
           id="mobileMenu"
-          class="${this.isMobileMenuOpen ? "flex" : "hidden"} md:hidden flex-col gap-2 text-center bg-[#064e3b] border-t border-[#E1A100]"
+          class="hidden md:hidden flex-col gap-2 text-center bg-[#064e3b] border-t border-[#E1A100]"
         >
-          <a href="./index.html" class="text-[#E1A100] hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Home</a>
-          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Services</a>
-          <a href="./register.html" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4">Register</a>
-          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4 mb-4">Contact</a>
+          <a href="quran.html" class="text-white hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+            >AI Qur'an mentor</a
+          >
+          <a href="./index.html" class="text-white hover:text-white hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+            >Home</a
+          >
+          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+            >Services</a
+          >
+          <a href="./register.html" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4"
+            >Register</a
+          >
+          <a href="" class="text-white/80 hover:text-[#E1A100] hover:bg-green-800 text-lg font-medium transition-colors duration-200 py-3 px-4 rounded-lg mx-4 mb-4"
+            >Contact</a
+          >
         </div>
       </nav>
     `;
@@ -697,9 +715,46 @@ class DaarulArkomApp {
     const container = document.getElementById("footer-container");
     if (!container) return;
     container.innerHTML = `
-      <footer class="bg-[#064e3b] text-white py-8 border-t border-[#E1A100]">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-          <p class="text-sm text-white/70">© 2026 Daarul Arkom Digital Madrasa. All rights reserved.</p>
+      <footer class="bg-[#064e3b] border-t border-[#E1A100] text-white py-8 sm:py-12 px-4 sm:px-8 relative overflow-hidden animate-fadeInUp">
+        <div class="max-w-7xl mx-auto md:flex md:justify-between grid grid-cols-1 gap-6 sm:gap-8 text-center sm:text-left">
+          <div class="flex flex-col items-center sm:items-start gap-3 animate-fadeInLeft delay-100">
+            <div class="flex items-center gap-3 hover-lift">
+              <img
+                src="./images/favicon.ico"
+                alt="Markazul Islam Logo"
+                class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-[#E1A100] object-cover shadow-lg"
+              />
+              <span class="text-lg sm:text-xl md:text-2xl font-bold text-[#E1A100]">Darul-Arkom Academy</span>
+            </div>
+            <p class="text-white/70 text-xs sm:text-sm max-w-sm leading-relaxed">
+              Dedicated to providing authentic and comprehensive Qur'an education
+              to students worldwide through qualified teachers and modern
+              technology.
+            </p>
+            <div class="flex gap-4 text-[#E1A100] text-lg sm:text-xl">
+              <a href="https://www.facebook.com/share/1F333SGFnW/" target="_blank" aria-label="Facebook" class="hover:text-white transition-all duration-200 hover:scale-125"><i class="fa-brands fa-facebook"></i></a>
+              <a href="https://wa.me/2349069115484" target="_blank" aria-label="WhatsApp" class="hover:text-white transition-all duration-200 hover:scale-125"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+
+          <div class="gap-2 mt-2 sm:mt-4 space-y-2 sm:space-y-3 text-sm sm:text-base">
+            <div class="flex items-center gap-2 hover:translate-x-2 transition-transform justify-center sm:justify-start">
+              <i class="fa-solid fa-envelope text-[#E1A100]"></i>
+              <span class="text-white/70">daarularkominternational@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-2 hover:translate-x-2 transition-transform justify-center sm:justify-start">
+              <i class="fa-solid fa-phone text-[#E1A100]"></i>
+              <span class="text-white/70">+234 906 911 5484</span>
+            </div>
+            <div class="flex items-center gap-2 hover:translate-x-2 transition-transform justify-center sm:justify-start">
+              <i class="fa-regular fa-clock text-[#E1A100]"></i>
+              <span class="text-white/70">24/7 Support Available</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-[#E1A100] text-center text-xs sm:text-sm text-white/60 flex flex-col sm:flex-row justify-between items-center gap-2 animate-fadeInUp delay-500">
+          <p>&copy; 2026 Darul-Arkom. All rights reserved.</p>
         </div>
       </footer>
     `;
